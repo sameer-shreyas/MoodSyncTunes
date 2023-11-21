@@ -58,8 +58,8 @@
 
         <!-- Result display area -->
         <div id="result" class="mt-3"></div>
-
         <!-- Recommended Song display area -->
+        <div id="emoji" class="mt-3"></div>
         <div id="recommendedSong" class="mt-3"></div>
     </div>
 
@@ -118,6 +118,26 @@
 
         function displayResult(predictedLabel) {
         const resultDiv = document.getElementById('result');
+        const emojiDiv = document.getElementById('emoji');  // Add this line to get the emoji div
+
+        // Map emotions to corresponding emoji filenames
+        const emojiFilenames = {
+            '#Angry': 'Angry.png',
+            '#Disgust': 'Disgust.png',
+            '#Fear': 'Fear.png',
+            '#Happy': 'Happy.png',
+            '#Neutral': 'Neutral.png',
+            '#Sad': 'Sad.png',
+            '#Surprised': 'Surprised.png',
+        };
+
+        // Get the filename for the predicted emotion
+        const emojiFilename = emojiFilenames[predictedLabel];
+        
+        // Display the emoji
+        emojiDiv.innerHTML = `<img src="/static/emojis/${emojiFilename}" alt="${predictedLabel}" style="width: 50px; height: 50px;">`;
+
+        // Display the predicted emotion
         resultDiv.textContent = `Predicted Emotion: ${predictedLabel}`;
 
         // Call the function to recommend a song based on the predicted emotion
@@ -141,7 +161,7 @@
         '#Neutral' : [{ name: 'Neutral Sonata', link: 'https://open.spotify.com/track/3C0xzYezIT60OFBubXWcFY?si=d8e8f0f03a9541c0' }, { name: 'Waves', link: 'https://open.spotify.com/track/6w8pFOKn42O418qwcQElZ3?si=718ab484094f42a4' } ],
         '#Surprised' : [ { name: 'Gal Mitthi Mitthi,', link: 'https://open.spotify.com/track/4J9n7thOdqi8gxRGNyQoVC?si=da0357b685c64dc0' }, { name: 'Dance Pe Chance', link: 'https://open.spotify.com/track/5EqggGHTuqiUfruO2gMHhI?si=a4fb1b1edde4417b' } ]
         // Add more emotions and their song lists
-    };
+    };
 
 
     // Check if the emotion exists in the recommendations
