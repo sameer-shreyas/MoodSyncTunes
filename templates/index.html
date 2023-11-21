@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facial Emotion Recognition</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        #video {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 10px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+        }
+
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        #recommendedSong {
+            margin-top: 20px;
+        }
+
+        button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Facial Emotion Recognition</h1>
+
+        <!-- Button to open the webcam -->
+        <button class="btn btn-primary" onclick="openWebcam()">Open Webcam</button>
+
+        <!-- Video element for displaying the webcam feed -->
+        <video id="video" style="display: none;" class="mt-3" autoplay></video>
+
+        <!-- Button to take a snapshot -->
+        <button class="btn btn-success" onclick="takeSnapshot()" style="display: none;">Take Snapshot</button>
+
+        <!-- Result display area -->
+        <div id="result" class="mt-3"></div>
+
+        <!-- Recommended Song display area -->
+        <div id="recommendedSong" class="mt-3"></div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+    <script>
+        let webcamOpen = false; // Flag to track if the webcam is open
+
+        function openWebcam() {
+            const video = document.getElementById('video');
+            const snapshotButton = document.querySelector('button[onclick="takeSnapshot()"]');
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.style.display = 'block'; // Show the video element
+                    snapshotButton.style.display = 'block'; // Show the snapshot button
+                    webcamOpen = true;
+                })
+                .catch(err => console.error("Error accessing webcam: ", err));
+        }
+
+        async function takeSnapshot() {
+            if (!webcamOpen) {
+                console.error("Webcam not open");
+                return;
+            }
+
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const imageData = canvas.toDataURL('image/png');
+            sendDataToBackend(imageData);
+        }
+
+        async function sendDataToBackend(imageData) {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ image: imageData }),
+            });
+
+            const result = await response.json();
+            displayResult(result.predicted_label);
+        }
+
+        function displayResult(predictedLabel) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.textContent = `Predicted Emotion: ${predictedLabel}`;
+
+        // Call the function to recommend a song based on the predicted emotion
+        recommendSong(predictedLabel);
+    }
+    function recommendSong(emotion) {
+    const recommendedSongDiv = document.getElementById('recommendedSong');
+    let recommendedSongs = [];
+
+    // Map emotions to arrays of songs
+    const songRecommendations = {
+        '#Happy': [
+            { name: 'Mann Meri Jann', link: 'https://open.spotify.com/track/0NapkeC45rszeuSgbvcjx4?si=a01ee654d7af482d' },
+            { name: 'Heeriye', link: 'https://open.spotify.com/track/5PUXKVVVQ74C3gl5vKy9Li?si=1bfb8eeddc644d6f'}
+            // Add more happy songs if needed
+        ],
+        '#Sad': [ { name: 'Kahani Suno', link: 'https://open.spotify.com/track/4VsP4Dm8gsibRxB5I2hEkw?si=8e45726342bb42a4' }, {name: 'Mann Bharaya', link:'https://open.spotify.com/track/3jf5303mzzJ96O8xFTcEn4?si=26f66a7f34624ca9' } ],
+        '#Angry': [ { name: 'Jee Karda', link: 'https://open.spotify.com/track/6d1VAGIsaxCDMaQfVdLtRC?si=271a45877a004c35' },  { name: 'Khalibali', link: 'https://open.spotify.com/track/3JT0mVof65rIHpRZITwRx1?si=f64435c06a204279' } ],
+        '#Disgust' : [ { name: 'Systumm', link: 'https://open.spotify.com/track/582ENBil4HYiBWdBouFkU9?si=b649b8ed1a7f4e0e'}, { name: 'Selfie Mene Le Liya', link: 'https://open.spotify.com/track/4PhEyYIJfJx1DNBrLEYO1Q?si=a94cbd3c8d5d4e32' } ],
+        '#Fear' : [ { name: 'Gumnaam Hai Koi', link: 'https://open.spotify.com/track/11JVUtJiWIbijkxBvGSfL9?si=92ea8b6dfc514792' }, { name: 'Ami Je Tomar', link: 'https://open.spotify.com/track/7wJc6SP8Hixj9ArmSUO1oL?si=c9e596fb9e0a482e' } ],
+        '#Neutral' : [{ name: 'Neutral Sonata', link: 'https://open.spotify.com/track/3C0xzYezIT60OFBubXWcFY?si=d8e8f0f03a9541c0' }, { name: 'Waves', link: 'https://open.spotify.com/track/6w8pFOKn42O418qwcQElZ3?si=718ab484094f42a4' } ],
+        '#Surprised' : [ { name: 'Gal Mitthi Mitthi,', link: 'https://open.spotify.com/track/4J9n7thOdqi8gxRGNyQoVC?si=da0357b685c64dc0' }, { name: 'Dance Pe Chance', link: 'https://open.spotify.com/track/5EqggGHTuqiUfruO2gMHhI?si=a4fb1b1edde4417b' } ]
+        // Add more emotions and their song lists
+    };
+
+
+    // Check if the emotion exists in the recommendations
+    if (emotion in songRecommendations) {
+        recommendedSongs = songRecommendations[emotion];
+    } else {
+        recommendedSongs = [{ name: 'No recommendations available for this emotion', link: '#' }];
+    }
+
+    // Display the recommended songs
+    recommendedSongDiv.innerHTML = `<p>Recommended Songs for ${emotion}:</p>
+                                    <ul>${recommendedSongs.map(song => `<li><a href="${song.link}" target="_blank">${song.name}</a></li>`).join('')}</ul>`;
+}
+
+
+    </script>
+</body>
+</html>
