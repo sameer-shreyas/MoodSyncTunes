@@ -92,9 +92,9 @@ async function recommendSong(emotion) {
 
     function displayRecommendedSongs() {
         recommendedSongs = shuffleArray(recommendedSongs);
-
+    
         const selectedSongs = recommendedSongs.slice(0, 5);
-
+    
         let tableHTML = `<p>Recommended Songs for ${emotion}:</p>
                         <table class="table">
                             <thead>
@@ -105,19 +105,20 @@ async function recommendSong(emotion) {
                                 </tr>
                             </thead>
                             <tbody>`;
-
+    
         tableHTML += selectedSongs.map(song => `
                         <tr>
-                            <td>${song.Name}</td>
+                            <td><a href="${song.Spotify_Link}" target="_blank">${song.Name}</a></td>
                             <td>${song.Artist}</td>
                             <td>${song.Album}</td>
                         </tr>`).join('');
-
+    
         tableHTML += `</tbody>
                     </table>`;
-
+    
         recommendedSongDiv.innerHTML = tableHTML;
     }
+    
 
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
