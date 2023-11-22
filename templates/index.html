@@ -123,12 +123,10 @@
             const result = await response.json();
             displayResult(result);
         }
-
         function displayResult(result) {
             const resultDiv = document.getElementById('result');
             const emojiDiv = document.getElementById('emoji');
             const predictedImageDiv = document.getElementById('predictedImage');
-
             // Map emotions to corresponding emoji filenames
             const emojiFilenames = {
                 '#Angry': 'Angry.png',
