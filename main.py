@@ -8,7 +8,7 @@ from io import BytesIO
 
 app = Flask(__name__)
 
-app.static_folder = 'C:\\Users\\Dips\\Desktop\\BTP_Project\\MoodSyncTunes\\static'
+app.static_folder = 'static'
 
 
 # Route to render the HTML template

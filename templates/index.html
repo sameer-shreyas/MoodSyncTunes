@@ -46,6 +46,8 @@
             margin-top: 10px;
         }
     </style>
+    <!-- Add this script tag for PapaParse -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 
 <body>
@@ -154,37 +156,72 @@
             recommendSong(result.predicted_label);
         }
 
-        function recommendSong(emotion) {
-            const recommendedSongDiv = document.getElementById('recommendedSong');
-            let recommendedSongs = [];
+        async function recommendSong(emotion) {
+        const recommendedSongDiv = document.getElementById('recommendedSong');
+        let recommendedSongs = [];
 
-            // Map emotions to arrays of songs
-            const songRecommendations = {
-                '#Happy': [
-                    { name: 'Mann Meri Jann', link: 'https://open.spotify.com/track/0NapkeC45rszeuSgbvcjx4?si=a01ee654d7af482d' },
-                    { name: 'Heeriye', link: 'https://open.spotify.com/track/5PUXKVVVQ74C3gl5vKy9Li?si=1bfb8eeddc644d6f' }
-                    // Add more happy songs if needed
-                ],
-                '#Sad': [{ name: 'Kahani Suno', link: 'https://open.spotify.com/track/4VsP4Dm8gsibRxB5I2hEkw?si=8e45726342bb42a4' }, { name: 'Mann Bharaya', link: 'https://open.spotify.com/track/3jf5303mzzJ96O8xFTcEn4?si=26f66a7f34624ca9' }],
-                '#Angry': [{ name: 'Jee Karda', link: 'https://open.spotify.com/track/6d1VAGIsaxCDMaQfVdLtRC?si=271a45877a004c35' }, { name: 'Khalibali', link: 'https://open.spotify.com/track/3JT0mVof65rIHpRZITwRx1?si=f64435c06a204279' }],
-                '#Disgust': [{ name: 'Systumm', link: 'https://open.spotify.com/track/582ENBil4HYiBWdBouFkU9?si=b649b8ed1a7f4e0e' }, { name: 'Selfie Mene Le Liya', link: 'https://open.spotify.com/track/4PhEyYIJfJx1DNBrLEYO1Q?si=a94cbd3c8d5d4e32' }],
-                '#Fear': [{ name: 'Gumnaam Hai Koi', link: 'https://open.spotify.com/track/11JVUtJiWIbijkxBvGSfL9?si=92ea8b6dfc514792' }, { name: 'Aami Je Tomar', link: 'https://open.spotify.com/track/7wJc6SP8Hixj9ArmSUO1oL?si=c9e596fb9e0a482e' }],
-                '#Neutral': [{ name: 'Neutral Sonata', link: 'https://open.spotify.com/track/3C0xzYezIT60OFBubXWcFY?si=d8e8f0f03a9541c0' }, { name: 'Waves', link: 'https://open.spotify.com/track/6w8pFOKn42O418qwcQElZ3?si=718ab484094f42a4' }],
-                '#Surprised': [{ name: 'Gal Mitthi Mitthi,', link: 'https://open.spotify.com/track/4J9n7thOdqi8gxRGNyQoVC?si=da0357b685c64dc0' }, { name: 'Dance Pe Chance', link: 'https://open.spotify.com/track/5EqggGHTuqiUfruO2gMHhI?si=a4fb1b1edde4417b' }]
-                // Add more emotions and their song lists
-            };
+        // Read the CSV file for the specific emotion
+        const csvFile = `/static/songs/${emotion.toLowerCase().substring(1)}.csv`;
+        const response = await fetch(csvFile);
+        const csvData = await response.text();
 
-            // Check if the emotion exists in the recommendations
-            if (emotion in songRecommendations) {
-                recommendedSongs = songRecommendations[emotion];
-            } else {
-                recommendedSongs = [{ name: 'No recommendations available for this emotion', link: '#' }];
+        // Parse the CSV data
+        Papa.parse(csvData, {
+            header: true,
+            dynamicTyping: true,
+            complete: (result) => {
+                recommendedSongs = result.data;
+                displayRecommendedSongs();
+            },
+            error: (err) => {
+                console.error("Error parsing CSV:", err);
             }
+        });
 
-            // Display the recommended songs
-            recommendedSongDiv.innerHTML = `<p>Recommended Songs for ${emotion}:</p>
-                                    <ul>${recommendedSongs.map(song => `<li><a href="${song.link}" target="_blank">${song.name}</a></li>`).join('')}</ul>`;
+        function displayRecommendedSongs() {
+        // Randomly shuffle the array
+        recommendedSongs = shuffleArray(recommendedSongs);
+        // Take the first 5 songs (or less if there are fewer than 5)
+        const selectedSongs = recommendedSongs.slice(0, 5);
+
+        // Display the recommended songs in a table
+        let tableHTML = `<p>Recommended Songs for ${emotion}:</p>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Artist</th>
+                                    <th>Album</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+        tableHTML += selectedSongs.map(song => `
+                        <tr>
+                            <td>${song.Name}</td>
+                            <td>${song.Artist}</td>
+                            <td>${song.Album}</td>
+                        </tr>`).join('');
+
+        tableHTML += `</tbody>
+                    </table>`;
+
+        // Display the table in the recommendedSongDiv
+        recommendedSongDiv.innerHTML = tableHTML;
+    }
+
+
+    // Function to shuffle an array using Fisher-Yates algorithm
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
+        return array;
+    }
+
+    }
+
     </script>
 </body>
 
