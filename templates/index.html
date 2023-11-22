@@ -1,11 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Facial Emotion Recognition</title>
-    
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -38,11 +38,16 @@
             margin-top: 20px;
         }
 
+        #predictedImage {
+            margin-top: 20px;
+        }
+
         button {
             margin-top: 10px;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Facial Emotion Recognition</h1>
@@ -58,16 +63,19 @@
 
         <!-- Result display area -->
         <div id="result" class="mt-3"></div>
+
         <!-- Recommended Song display area -->
         <div id="emoji" class="mt-3"></div>
         <div id="recommendedSong" class="mt-3"></div>
+
+        <!-- Display the predicted image with bounding box -->
+        <div id="predictedImage"></div>
     </div>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 
     <script>
         let webcamOpen = false; // Flag to track if the webcam is open
@@ -113,70 +121,71 @@
             });
 
             const result = await response.json();
-            displayResult(result.predicted_label);
+            displayResult(result);
+        }
+        function displayResult(result) {
+            const resultDiv = document.getElementById('result');
+            const emojiDiv = document.getElementById('emoji');
+            const predictedImageDiv = document.getElementById('predictedImage');
+            // Map emotions to corresponding emoji filenames
+            const emojiFilenames = {
+                '#Angry': 'Angry.png',
+                '#Disgust': 'Disgust.png',
+                '#Fear': 'Fear.png',
+                '#Happy': 'Happy.png',
+                '#Neutral': 'Neutral.png',
+                '#Sad': 'Sad.png',
+                '#Surprised': 'Surprised.png',
+            };
+
+            // Get the filename for the predicted emotion
+            const emojiFilename = emojiFilenames[result.predicted_label];
+
+            // Display the emoji
+            emojiDiv.innerHTML = `<img src="/static/emojis/${emojiFilename}" alt="${result.predicted_label}" style="height: 230px;">`;
+
+            // Display the predicted emotion
+            resultDiv.textContent = `Predicted Emotion: ${result.predicted_label}`;
+
+            // Display the predicted image with bounding box
+            predictedImageDiv.innerHTML = `<img src="data:image/jpeg;base64,${result.predicted_image}" alt="Predicted Image" style="max-width: 100%;">`;
+
+            // Call the function to recommend a song based on the predicted emotion
+            recommendSong(result.predicted_label);
         }
 
-        function displayResult(predictedLabel) {
-        const resultDiv = document.getElementById('result');
-        const emojiDiv = document.getElementById('emoji');  // Add this line to get the emoji div
+        function recommendSong(emotion) {
+            const recommendedSongDiv = document.getElementById('recommendedSong');
+            let recommendedSongs = [];
 
-        // Map emotions to corresponding emoji filenames
-        const emojiFilenames = {
-            '#Angry': 'Angry.png',
-            '#Disgust': 'Disgust.png',
-            '#Fear': 'Fear.png',
-            '#Happy': 'Happy.png',
-            '#Neutral': 'Neutral.png',
-            '#Sad': 'Sad.png',
-            '#Surprised': 'Surprised.png',
-        };
+            // Map emotions to arrays of songs
+            const songRecommendations = {
+                '#Happy': [
+                    { name: 'Mann Meri Jann', link: 'https://open.spotify.com/track/0NapkeC45rszeuSgbvcjx4?si=a01ee654d7af482d' },
+                    { name: 'Heeriye', link: 'https://open.spotify.com/track/5PUXKVVVQ74C3gl5vKy9Li?si=1bfb8eeddc644d6f' }
+                    // Add more happy songs if needed
+                ],
+                '#Sad': [{ name: 'Kahani Suno', link: 'https://open.spotify.com/track/4VsP4Dm8gsibRxB5I2hEkw?si=8e45726342bb42a4' }, { name: 'Mann Bharaya', link: 'https://open.spotify.com/track/3jf5303mzzJ96O8xFTcEn4?si=26f66a7f34624ca9' }],
+                '#Angry': [{ name: 'Jee Karda', link: 'https://open.spotify.com/track/6d1VAGIsaxCDMaQfVdLtRC?si=271a45877a004c35' }, { name: 'Khalibali', link: 'https://open.spotify.com/track/3JT0mVof65rIHpRZITwRx1?si=f64435c06a204279' }],
+                '#Disgust': [{ name: 'Systumm', link: 'https://open.spotify.com/track/582ENBil4HYiBWdBouFkU9?si=b649b8ed1a7f4e0e' }, { name: 'Selfie Mene Le Liya', link: 'https://open.spotify.com/track/4PhEyYIJfJx1DNBrLEYO1Q?si=a94cbd3c8d5d4e32' }],
+                '#Fear': [{ name: 'Gumnaam Hai Koi', link: 'https://open.spotify.com/track/11JVUtJiWIbijkxBvGSfL9?si=92ea8b6dfc514792' }, { name: 'Aami Je Tomar', link: 'https://open.spotify.com/track/7wJc6SP8Hixj9ArmSUO1oL?si=c9e596fb9e0a482e' }],
+                '#Neutral': [{ name: 'Neutral Sonata', link: 'https://open.spotify.com/track/3C0xzYezIT60OFBubXWcFY?si=d8e8f0f03a9541c0' }, { name: 'Waves', link: 'https://open.spotify.com/track/6w8pFOKn42O418qwcQElZ3?si=718ab484094f42a4' }],
+                '#Surprised': [{ name: 'Gal Mitthi Mitthi,', link: 'https://open.spotify.com/track/4J9n7thOdqi8gxRGNyQoVC?si=da0357b685c64dc0' }, { name: 'Dance Pe Chance', link: 'https://open.spotify.com/track/5EqggGHTuqiUfruO2gMHhI?si=a4fb1b1edde4417b' }]
+                // Add more emotions and their song lists
+            };
 
-        // Get the filename for the predicted emotion
-        const emojiFilename = emojiFilenames[predictedLabel];
-        
-        // Display the emoji
-        emojiDiv.innerHTML = `<img src="/static/emojis/${emojiFilename}" alt="${predictedLabel}" style="height: 230px;">`;
+            // Check if the emotion exists in the recommendations
+            if (emotion in songRecommendations) {
+                recommendedSongs = songRecommendations[emotion];
+            } else {
+                recommendedSongs = [{ name: 'No recommendations available for this emotion', link: '#' }];
+            }
 
-        // Display the predicted emotion
-        resultDiv.textContent = `Predicted Emotion: ${predictedLabel}`;
-
-        // Call the function to recommend a song based on the predicted emotion
-        recommendSong(predictedLabel);
-    }
-    function recommendSong(emotion) {
-    const recommendedSongDiv = document.getElementById('recommendedSong');
-    let recommendedSongs = [];
-
-    // Map emotions to arrays of songs
-    const songRecommendations = {
-        '#Happy': [
-            { name: 'Mann Meri Jann', link: 'https://open.spotify.com/track/0NapkeC45rszeuSgbvcjx4?si=a01ee654d7af482d' },
-            { name: 'Heeriye', link: 'https://open.spotify.com/track/5PUXKVVVQ74C3gl5vKy9Li?si=1bfb8eeddc644d6f'}
-            // Add more happy songs if needed
-        ],
-        '#Sad': [ { name: 'Kahani Suno', link: 'https://open.spotify.com/track/4VsP4Dm8gsibRxB5I2hEkw?si=8e45726342bb42a4' }, {name: 'Mann Bharaya', link:'https://open.spotify.com/track/3jf5303mzzJ96O8xFTcEn4?si=26f66a7f34624ca9' } ],
-        '#Angry': [ { name: 'Jee Karda', link: 'https://open.spotify.com/track/6d1VAGIsaxCDMaQfVdLtRC?si=271a45877a004c35' },  { name: 'Khalibali', link: 'https://open.spotify.com/track/3JT0mVof65rIHpRZITwRx1?si=f64435c06a204279' } ],
-        '#Disgust' : [ { name: 'Systumm', link: 'https://open.spotify.com/track/582ENBil4HYiBWdBouFkU9?si=b649b8ed1a7f4e0e'}, { name: 'Selfie Mene Le Liya', link: 'https://open.spotify.com/track/4PhEyYIJfJx1DNBrLEYO1Q?si=a94cbd3c8d5d4e32' } ],
-        '#Fear' : [ { name: 'Gumnaam Hai Koi', link: 'https://open.spotify.com/track/11JVUtJiWIbijkxBvGSfL9?si=92ea8b6dfc514792' }, { name: 'Aami Je Tomar', link: 'https://open.spotify.com/track/7wJc6SP8Hixj9ArmSUO1oL?si=c9e596fb9e0a482e' } ],
-        '#Neutral' : [{ name: 'Neutral Sonata', link: 'https://open.spotify.com/track/3C0xzYezIT60OFBubXWcFY?si=d8e8f0f03a9541c0' }, { name: 'Waves', link: 'https://open.spotify.com/track/6w8pFOKn42O418qwcQElZ3?si=718ab484094f42a4' } ],
-        '#Surprised' : [ { name: 'Gal Mitthi Mitthi,', link: 'https://open.spotify.com/track/4J9n7thOdqi8gxRGNyQoVC?si=da0357b685c64dc0' }, { name: 'Dance Pe Chance', link: 'https://open.spotify.com/track/5EqggGHTuqiUfruO2gMHhI?si=a4fb1b1edde4417b' } ]
-        // Add more emotions and their song lists
-    };
-
-
-    // Check if the emotion exists in the recommendations
-    if (emotion in songRecommendations) {
-        recommendedSongs = songRecommendations[emotion];
-    } else {
-        recommendedSongs = [{ name: 'No recommendations available for this emotion', link: '#' }];
-    }
-
-    // Display the recommended songs
-    recommendedSongDiv.innerHTML = `<p>Recommended Songs for ${emotion}:</p>
+            // Display the recommended songs
+            recommendedSongDiv.innerHTML = `<p>Recommended Songs for ${emotion}:</p>
                                     <ul>${recommendedSongs.map(song => `<li><a href="${song.link}" target="_blank">${song.name}</a></li>`).join('')}</ul>`;
-}
-
-
+        }
     </script>
 </body>
+
 </html>
