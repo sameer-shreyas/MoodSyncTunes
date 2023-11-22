@@ -6,71 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Facial Emotion Recognition</title>
 
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            padding: 20px;
-            background-color: #f8f9fa;
-        }
-
-        h1 {
-            color: #007bff;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        #video {
-            width: 100%;
-            max-width: 600px;
-            margin-bottom: 10px;
-            border: 2px solid #007bff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
-        }
-
-        #result {
-            margin-top: 10px;
-            font-weight: bold;
-            color: #28a745;
-        }
-
-        #recommendedSong {
-            margin-top: 20px;
-        }
-
-        #predictedImage {
-            margin-top: 20px;
-        }
-
-        button {
-            margin-top: 10px;
-        }
-    </style>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/styles.css">
+    
     <!-- Add this script tag for PapaParse -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 
 <body>
     <div class="container">
         <h1>Facial Emotion Recognition</h1>
 
-        <!-- Button to open the webcam -->
         <button class="btn btn-primary" onclick="openWebcam()">Open Webcam</button>
 
-        <!-- Video element for displaying the webcam feed -->
         <video id="video" style="display: none;" class="mt-3" autoplay></video>
 
-        <!-- Button to take a snapshot -->
         <button class="btn btn-success" onclick="takeSnapshot()" style="display: none;">Take Snapshot</button>
 
-        <!-- Result display area -->
         <div id="result" class="mt-3"></div>
-
-        <!-- Recommended Song display area -->
         <div id="emoji" class="mt-3"></div>
         <div id="recommendedSong" class="mt-3"></div>
-
-        <!-- Display the predicted image with bounding box -->
         <div id="predictedImage"></div>
     </div>
 
@@ -79,150 +37,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <script>
-        let webcamOpen = false; // Flag to track if the webcam is open
-
-        function openWebcam() {
-            const video = document.getElementById('video');
-            const snapshotButton = document.querySelector('button[onclick="takeSnapshot()"]');
-
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    video.srcObject = stream;
-                    video.style.display = 'block'; // Show the video element
-                    snapshotButton.style.display = 'block'; // Show the snapshot button
-                    webcamOpen = true;
-                })
-                .catch(err => console.error("Error accessing webcam: ", err));
-        }
-
-        async function takeSnapshot() {
-            if (!webcamOpen) {
-                console.error("Webcam not open");
-                return;
-            }
-
-            const video = document.getElementById('video');
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const imageData = canvas.toDataURL('image/png');
-            sendDataToBackend(imageData);
-        }
-
-        async function sendDataToBackend(imageData) {
-            const response = await fetch('/predict', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ image: imageData }),
-            });
-
-            const result = await response.json();
-            displayResult(result);
-        }
-        function displayResult(result) {
-            const resultDiv = document.getElementById('result');
-            const emojiDiv = document.getElementById('emoji');
-            const predictedImageDiv = document.getElementById('predictedImage');
-            // Map emotions to corresponding emoji filenames
-            const emojiFilenames = {
-                '#Angry': 'Angry.png',
-                '#Disgust': 'Disgust.png',
-                '#Fear': 'Fear.png',
-                '#Happy': 'Happy.png',
-                '#Neutral': 'Neutral.png',
-                '#Sad': 'Sad.png',
-                '#Surprised': 'Surprised.png',
-            };
-
-            // Get the filename for the predicted emotion
-            const emojiFilename = emojiFilenames[result.predicted_label];
-
-            // Display the emoji
-            emojiDiv.innerHTML = `<img src="/static/emojis/${emojiFilename}" alt="${result.predicted_label}" style="height: 230px;">`;
-
-            // Display the predicted emotion
-            resultDiv.textContent = `Predicted Emotion: ${result.predicted_label}`;
-
-            // Display the predicted image with bounding box
-            predictedImageDiv.innerHTML = `<img src="data:image/jpeg;base64,${result.predicted_image}" alt="Predicted Image" style="max-width: 100%;">`;
-
-            // Call the function to recommend a song based on the predicted emotion
-            recommendSong(result.predicted_label);
-        }
-
-        async function recommendSong(emotion) {
-        const recommendedSongDiv = document.getElementById('recommendedSong');
-        let recommendedSongs = [];
-
-        // Read the CSV file for the specific emotion
-        const csvFile = `/static/songs/${emotion.toLowerCase().substring(1)}.csv`;
-        const response = await fetch(csvFile);
-        const csvData = await response.text();
-
-        // Parse the CSV data
-        Papa.parse(csvData, {
-            header: true,
-            dynamicTyping: true,
-            complete: (result) => {
-                recommendedSongs = result.data;
-                displayRecommendedSongs();
-            },
-            error: (err) => {
-                console.error("Error parsing CSV:", err);
-            }
-        });
-
-        function displayRecommendedSongs() {
-        // Randomly shuffle the array
-        recommendedSongs = shuffleArray(recommendedSongs);
-        // Take the first 5 songs (or less if there are fewer than 5)
-        const selectedSongs = recommendedSongs.slice(0, 5);
-
-        // Display the recommended songs in a table
-        let tableHTML = `<p>Recommended Songs for ${emotion}:</p>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Artist</th>
-                                    <th>Album</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
-
-        tableHTML += selectedSongs.map(song => `
-                        <tr>
-                            <td>${song.Name}</td>
-                            <td>${song.Artist}</td>
-                            <td>${song.Album}</td>
-                        </tr>`).join('');
-
-        tableHTML += `</tbody>
-                    </table>`;
-
-        // Display the table in the recommendedSongDiv
-        recommendedSongDiv.innerHTML = tableHTML;
-    }
-
-
-    // Function to shuffle an array using Fisher-Yates algorithm
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    }
-
-    </script>
+    <!-- Custom JavaScript -->
+    <script src="/static/script.js"></script>
 </body>
 
 </html>
