@@ -1,41 +1,116 @@
-body {
-    padding: 20px;
-    background-color: #f8f9fa;
+Update for Facial Emotion Recognition Section
+header {
+  background: #d1cfe8; /* Lavender Shade Background */
 }
 
-h1 {
-    color: #007bff;
-    text-align: center;
-    margin-bottom: 30px;
+header h1 {
+  font-family: 'Open Sans', sans-serif; /* Use Open Sans font */
+  font-weight: bold; /* Bold font */
+  color: #3DCFD3; /* Primary color */
+  font-size: 2.5rem; /* Adjust font size */
+  text-align: center; /* Center the text */
+  padding: 2rem 0; /* Add padding for spacing */
 }
+
+/* Update for 3D Button */
+.btn-primary {
+  background: #3DCFD3; /* Primary color */
+  color: #6B240C; /* White text */
+  border: 2px solid transparent;
+  border-radius: 8px; /* Rounded corners */
+  padding: 1rem 3rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #6B240C; /* White background on hover */
+  border-color: #3DCFD3; /* Border color on hover */
+  color: #3DCFD3; /* Text color on hover */
+}
+
+/* Add Animation to Background */
+header {
+  background-size: 200% 100%;
+  animation: gradientBG 10s ease infinite;
+}
+
+body {
+  background-image: linear-gradient(to right, #161A30, #ffc107);
+  animation: gradientBG 10s ease infinite;
+}
+
+body {
+  background-image: linear-gradient(to right, #161A30, #ffc107);
+  animation: gradientBG 10s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+body {
+  background-image: linear-gradient(to right, #64CCC5, #001C30);
+  animation: gradientBG 10s ease infinite;
+  position: relative; /* Position the body element relative to its children */
+}
+
+.bubble {
+  position: absolute; /* Position the bubbles relative to their parent container */
+  z-index: -1; /* Place the bubbles behind other elements, effectively moving them to the background */
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5); /* Set transparency */
+  border: 2px solid rgba(255, 255, 255, 0.7); /* Set border transparency */
+  animation: bubbleMovement 3s ease-in-out infinite;
+}
+.box {
+  opacity: 0.5;
+  background-color: #fff;
+  border: 1px solid #ccc;
+}
+
+@keyframes bubbleMovement {
+  0% {
+    transform: translateX(-100%) translateY(-100%); /* Start outside the visible area */
+  }
+  50% {
+    transform: translateX(100%) translateY(100%); /* Move diagonally across the screen */
+  }
+  100% {
+    transform: translateX(-100%) translateY(-100%); /* Return to starting position */
+  }
+}
+
 
 #video {
-    width: 100%;
-    max-width: 600px;
-    margin-bottom: 10px;
-    border: 2px solid #007bff;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+  animation: bounce 1s ease-in-out infinite;
+  transform: translateY(50px); /* Initial position for bouncing animation */
 }
 
-#result {
-    margin-top: 10px;
-    font-weight: bold;
-    color: #28a745;
 }
 
-#emoji {
-    margin-top: 20px;
-}
-
-#recommendedSong {
-    margin-top: 20px;
-}
-
-#predictedImage {
-    margin-top: 20px;
-}
-
-button {
-    margin-top: 10px;
 }

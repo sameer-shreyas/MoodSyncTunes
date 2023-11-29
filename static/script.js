@@ -118,6 +118,7 @@ async function recommendSong(emotion) {
     
         recommendedSongDiv.innerHTML = tableHTML;
     }
+  
     
 
     function shuffleArray(array) {
@@ -125,6 +126,35 @@ async function recommendSong(emotion) {
             const j = Math.floor(Math.random() * (i + 1));
             [array[i], array[j]] = [array[j], array[i]];
         }
+        const body = document.querySelector('body');
+
+// Create and animate bubbles
+function createBubble() {
+  const bubble = document.createElement('div');
+  bubble.classList.add('bubble');
+
+  // Set random position within body
+  const randomX = Math.random() * window.innerWidth;
+  const randomY = Math.random() * window.innerHeight;
+  bubble.style.left = `${randomX}px`;
+  bubble.style.top = `${randomY}px`;
+
+  body.appendChild(bubble);
+
+  // Remove bubble after animation completes
+  setTimeout(() => {
+    bubble.parentNode.removeChild(bubble);
+  }, 3000); // Adjust animation duration as needed
+}
+
+// Create bubbles on page load and scroll events
+window.addEventListener('load', createBubble);
+window.addEventListener('scroll', createBubble);
+// Ensure scroll event listener is outside of other functions
+window.addEventListener('scroll', function() {
+  createBubble();
+});
+
         return array;
     }
 }
