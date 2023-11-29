@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -8,28 +8,80 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/styles.css">
-    
+
     <!-- Add this script tag for PapaParse -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <!-- Custom styles for Facial Emotion Recognition -->
+    <style>
+        /* Apply Open Sans font family to facial recognition section */
+        .facial-recognition-section {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        /* Lavender shade background for the header */
+        .header-section {
+            background-color: #DAFFFB; /* Lavender color code */
+        }
+
+        /* 3D button style */
+        .btn-3d {
+            padding: 0.8rem 3rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid transparent;
+            outline: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            margin-right: 10px; /* Added margin for spacing between buttons */
+        }
+            
+        /* Pastel color for the buttons */
+        .btn-pastel {
+            background-color: #E0F4FF;
+            border-color: #E6E6FA;
+            color: #6B240C;
+        }
+
+        /* 3D button style with pastel color */
+        .btn-3d.btn-pastel:hover {
+            background: transparent;
+            border-color: #87ceeb;
+            color: #87ceeb;
+        }
+
+        /* Center the video element after opening webcam */
+        #video-wrapper {
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>Facial Emotion Recognition</h1>
+        <div class="card mt-4 facial-recognition-section">
+            <div class="card-body header-section">
+            <h1 class="card-title text-center">Facial Emotion Recognition</h1>
+  <div class="d-flex justify-content-between">
+    <button class="btn btn-3d btn-pastel btn-lg" onclick="openWebcam()">Open Webcam</button>
+    <button class="btn btn-3d btn-pastel btn-lg" onclick="takeSnapshot()" style="display: none;">Take Snapshot</button>
+  </div>
 
-        <button class="btn btn-primary" onclick="openWebcam()">Open Webcam</button>
+  <div id="video-wrapper" class="text-center mt-3">
+    <video id="video" style="display: none; position: relative ; left: 20% " class="img-fluid" autoplay></video>
+  </div>
 
-        <video id="video" style="display: none;" class="mt-3" autoplay></video>
+  <div id="result" class="mt-3 text-center"></div>
+  <div id="emoji" class="mt-3 text-center"></div>
+  <div id="recommendedSong" class="mt-3"></div>
+  <div id="predictedImage" class="mt-3 text-center"></div>
+</div>
 
-        <button class="btn btn-success" onclick="takeSnapshot()" style="display: none;">Take Snapshot</button>
-
-        <div id="result" class="mt-3"></div>
-        <div id="emoji" class="mt-3"></div>
-        <div id="recommendedSong" class="mt-3"></div>
-        <div id="predictedImage"></div>
+        </div>
     </div>
 
     <!-- Bootstrap JS and dependencies -->
@@ -41,4 +93,4 @@
     <script src="/static/script.js"></script>
 </body>
 
-</html>
+</html> 
