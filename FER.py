@@ -93,27 +93,32 @@ def toggle_capture():
 def on_quit():
     root.destroy()
 
+
 if __name__ == '__main__':
     frame_number = 0
     root = tk.Tk()
-    img = ImageTk.PhotoImage(Image.open("logo.png")) 
-    lmain = tk.Label(master=root, padx=50, bd=10)
+
+    root.image = ImageTk.PhotoImage(Image.open("logo.png"))
+    header_label = tk.Label(root, image=root.image, bg='black')
+    header_label.pack(pady=10)
+
+    lmain = tk.Label(master=root, padx=30, bd=10)
     lmain2 = tk.Label(master=root, bd=10)
-    lmain3 = tk.Label(master=root, bd=10, fg="#CDCDCD", bg='black')
+    lmain3 = tk.Label(master=root,padx=30, bd=10, fg="#CDCDCD", bg='black')
     lmain.pack(side=LEFT)
-    lmain.place(x=50, y=250)
+    lmain.place(x=40, y=250)
     lmain3.pack()
     lmain3.place(x=960, y=250)
     lmain2.pack(side=RIGHT)
     lmain2.place(x=900, y=350)
 
-    capture_button = Button(root, text='Capture', command=toggle_capture, font=('arial', 15, 'bold'))
-    capture_button.pack(side=TOP)
+    pause_button = Button(root, text='Pause/Resume',fg="black", command=toggle_capture, font=('arial', 15, 'bold'))
+    pause_button.pack(side=TOP)
 
     root.title("Emotion_Recognition_Model")
     root.geometry("1400x900+100+10")
-    root['bg'] = 'black'
-    exitbutton = Button(root, text='Quit', fg="red", command=on_quit, font=('arial', 25, 'bold'))
+    root['bg'] = 'red'
+    exitbutton = Button(root, text='Quit', fg="black", command=on_quit, font=('arial', 25, 'bold'))
     exitbutton.pack(side=BOTTOM)
     
     threading.Thread(target=show_subject).start()
