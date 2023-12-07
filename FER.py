@@ -117,7 +117,7 @@ if __name__ == '__main__':
 
     root.title("Emotion_Recognition_Model")
     root.geometry("1400x900+100+10")
-    root['bg'] = 'red'
+    root['bg'] = '#FDF7E4'
     exitbutton = Button(root, text='Quit', fg="black", command=on_quit, font=('arial', 25, 'bold'))
     exitbutton.pack(side=BOTTOM)
     

@@ -33,7 +33,7 @@ def predict_emotion(image_data):
 
         # Convert PIL Image to OpenCV format
         frame1 = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-        frame1 = cv2.resize(frame1, (600, 500))
+        frame1 = cv2.resize(frame1, (600, 400))
 
         # Convert the frame to grayscale
         gray_frame = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
@@ -65,9 +65,6 @@ def predict_emotion(image_data):
         # Convert the image with bounding box to base64
         _, buffer = cv2.imencode('.jpg', frame1)
         image_with_box = base64.b64encode(buffer).decode('utf-8')
-
-        
-
         # Provide a default value for predicted_image if predicted_labels is empty
         return {'predicted_label': predicted_labels[0] if predicted_labels else None, 'predicted_image': image_with_box}
     except Exception as e:
