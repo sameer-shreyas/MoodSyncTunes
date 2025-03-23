@@ -5,6 +5,7 @@ import base64
 from tensorflow.keras.models import load_model
 from PIL import Image
 from io import BytesIO
+import os
 
 app = Flask(__name__)
 
@@ -82,5 +83,6 @@ def predict():
     # Return result as JSON
     return jsonify(result)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
